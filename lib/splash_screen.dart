@@ -38,7 +38,7 @@ class SplashConfig {
   static const Color connectingTextColor = Color(0xFF475569);
 
   // ---- Sizes ----
-  static const double iconSize = 200 ;
+  static const double iconSize = 180;
   static const double appNameFontSize = 34;
   static const double taglineFontSize = 17;
   static const double taglineDotSize = 6;
@@ -53,7 +53,7 @@ class SplashConfig {
 
   // ---- Animation durations ----
   static const Duration iconPopDelay = Duration(milliseconds: 150);
-  static const Duration iconPopDuration = Duration(milliseconds: 800);
+  static const Duration iconPopDuration = Duration(milliseconds: 950);
 
   static const Duration textFadeDuration = Duration(milliseconds: 650);
 
@@ -71,10 +71,19 @@ class SplashConfig {
 }
 
 class SplashScreen extends StatefulWidget {
-  /// Pass the widget that should be revealed underneath the splash.
+  /// The screen to navigate to once the splash finishes. It is NOT built
+  /// until the reveal transition completes, so its own entrance animation
+  /// (if it has one) only ever plays once, after the splash is gone.
   final Widget homeScreen;
 
-  const SplashScreen({super.key, required this.homeScreen});
+  /// Optional static (non-animated) visual shown behind the splash while
+  /// it slides away — purely for a seamless look during the transition.
+  /// Pass e.g. `Image.asset(WelcomeConfig.bgAsset, fit: BoxFit.cover)` if
+  /// your home screen's background should already be visible as the
+  /// splash slides up. Defaults to a plain background color.
+  final Widget? revealBackground;
+
+  const SplashScreen({super.key, required this.homeScreen, this.revealBackground});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -176,9 +185,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       backgroundColor: SplashConfig.colorLight,
       body: Stack(
         children: [
-          // The real home screen sits underneath the whole time. Once the
-          // splash slides up (step 4) it's revealed.
-          widget.homeScreen,
+          // A static, non-animated placeholder — NOT the real home screen.
+          // The real home screen is only built after the reveal finishes
+          // (see _goToHome), so its entrance animation plays exactly once,
+          // and only once it's actually visible to the user.
+          Positioned.fill(
+            child: widget.revealBackground ?? Container(color: SplashConfig.colorLight),
+          ),
 
           // Splash overlay: everything below animates as one unit sliding
           // upward off the screen for the final reveal.
