@@ -38,7 +38,7 @@ class SplashConfig {
   static const Color connectingTextColor = Color(0xFF475569);
 
   // ---- Sizes ----
-  static const double iconSize = 200;
+  static const double iconSize = 200 ;
   static const double appNameFontSize = 34;
   static const double taglineFontSize = 17;
   static const double taglineDotSize = 6;

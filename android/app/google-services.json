@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "640911464946",
+    "project_id": "neighbornest-27331",
+    "storage_bucket": "neighbornest-27331.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:640911464946:android:15e6abe2a73db2c7e3336b",
+        "android_client_info": {
+          "package_name": "com.example.neighbor_nest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBH0FNcG_7ve3kjwH3P4w5JUVUuQcimvIs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
