@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'splash_screen.dart'; // for the shared color palette (SplashConfig)
 import 'welcome_screen.dart'; // for the shared HoverScaleButton
 import 'login_screen.dart';
+import 'home_screen.dart';
 
 /// ============================================================
 /// SIGN UP SCREEN CONFIG
@@ -93,8 +94,7 @@ class _SignupScreenState extends State<SignupScreen> {
       await credential.user?.updateDisplayName(name);
 
       if (!mounted) return;
-      _showMessage('Account created! Welcome, $name.');
-      // TODO: once you have a home/dashboard screen, navigate there instead.
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
     } on FirebaseAuthException catch (e) {
       _showMessage(e.message ?? 'Sign up failed. Please try again.');
     } finally {
