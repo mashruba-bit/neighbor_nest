@@ -318,7 +318,7 @@ class _RevealButtons extends StatelessWidget {
       children: [
         _FadeSlideUp(
           animation: primaryAnim,
-          child: _HoverScaleButton(
+          child: HoverScaleButton(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SignupScreen()));
             },
@@ -350,7 +350,7 @@ class _RevealButtons extends StatelessWidget {
         SizedBox(height: WelcomeConfig.gapBetweenButtons),
         _FadeSlideUp(
           animation: secondaryAnim,
-          child: _HoverScaleButton(
+          child: HoverScaleButton(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
             },
@@ -381,16 +381,17 @@ class _RevealButtons extends StatelessWidget {
 
 /// A button wrapper that grows slightly on mouse hover (desktop/web) and
 /// shrinks slightly on tap-down (mobile touch feedback), then calls [onTap].
-class _HoverScaleButton extends StatefulWidget {
+/// Public so other screens (e.g. the signup screen) can reuse it too.
+class HoverScaleButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onTap;
-  const _HoverScaleButton({required this.child, required this.onTap});
+  const HoverScaleButton({super.key, required this.child, required this.onTap});
 
   @override
-  State<_HoverScaleButton> createState() => _HoverScaleButtonState();
+  State<HoverScaleButton> createState() => _HoverScaleButtonState();
 }
 
-class _HoverScaleButtonState extends State<_HoverScaleButton> {
+class _HoverScaleButtonState extends State<HoverScaleButton> {
   double _scale = 1.0;
 
   void _setScale(double value) => setState(() => _scale = value);
