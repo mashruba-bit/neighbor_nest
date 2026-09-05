@@ -239,8 +239,81 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+
+              // ---- Admin Login section ----
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(child: Divider(color: LoginConfig.fieldBorderColor)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      '',
+                      style: TextStyle(color: LoginConfig.hintColor),
+                    ),
+                  ),
+                  Expanded(child: Divider(color: LoginConfig.fieldBorderColor)),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const AdminComingSoonScreen()),
+                    );
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Text('🛡️', style: TextStyle(fontSize: 16)),
+                      SizedBox(width: 6),
+                      Text(
+                        'Admin Login',
+                        style: TextStyle(
+                          color: LoginConfig.subtitleColor,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Simple placeholder page shown when someone taps "Admin Login".
+/// Solid black background with a centered "coming soon" message.
+class AdminComingSoonScreen extends StatelessWidget {
+  const AdminComingSoonScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 32),
+          child: Text(
+            'Admin features coming soon!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

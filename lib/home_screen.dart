@@ -1,28 +1,130 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'splash_screen.dart'; // for the shared color palette (SplashConfig)
+import 'profile_screen.dart';
 
-/// Placeholder — design this screen later.
-/// Reached after a successful login or signup.
-class HomeScreen extends StatelessWidget {
+/// ============================================================
+/// HOME SCREEN CONFIG
+/// ============================================================
+class HomeConfig {
+  static const Color brandNavy = SplashConfig.neighborColor;
+  static const Color brandGreen = SplashConfig.nestColor;
+  static const Color primaryColor = SplashConfig.colorBlue;
+  static const Color hintColor = Color(0xFF94A3B8);
+}
+
+/// Labels for the bottom nav tabs, in order. Used both for the nav bar
+/// itself and for the "coming soon" page titles.
+const List<String> _tabLabels = [
+  'Home',
+  'Lost & Found',
+  'Donate',
+  'Volunteer',
+  'Board',
+  'Profile',
+];
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  // The nav bar always shows "Home" as selected on this screen — the other
+  // tabs open their own page instead of swapping content in place, so there's
+  // nothing to persist here between taps.
+  static const int _homeIndex = 0;
+  static const int _profileIndex = 5;
+
+  void _onTabTapped(int index) {
+    if (index == _homeIndex) return; // already here
+
+    if (index == _profileIndex) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const ProfileScreen()),
+      );
+      return;
+    }
+
+    // Lost & Found, Donate, Volunteer, Board — not built yet.
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => ComingSoonScreen(title: _tabLabels[index])),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('NeighborNest'),
-        actions: [
-          // Handy while testing — lets you log out and go try the login/
-          // signup flow again without reinstalling the app.
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Log out',
-            onPressed: () => FirebaseAuth.instance.signOut(),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Home',
+          style: TextStyle(
+            color: HomeConfig.brandNavy,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
+        ),
+      ),
+      body: const SizedBox.expand(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _homeIndex,
+        onTap: _onTabTapped,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
+        selectedItemColor: HomeConfig.primaryColor,
+        unselectedItemColor: HomeConfig.hintColor,
+        showUnselectedLabels: true,
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Lost & Found'),
+          BottomNavigationBarItem(icon: Icon(Icons.card_giftcard_outlined), label: 'Donate'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: 'Volunteer'),
+          BottomNavigationBarItem(icon: Icon(Icons.campaign_outlined), label: 'Board'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
         ],
       ),
+    );
+  }
+}
+
+/// Generic placeholder for any bottom-nav tab that isn't built yet — same
+/// black "coming soon" treatment used for Admin Login, just with a title
+/// that matches whichever tab was tapped.
+class ComingSoonScreen extends StatelessWidget {
+  final String title;
+
+  const ComingSoonScreen({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(title, style: const TextStyle(color: Colors.white)),
+      ),
       body: const Center(
-        child: Text('Home screen — coming soon'),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 32),
+          child: Text(
+            'Coming soon!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // used to save the neighborhood field
 import 'splash_screen.dart'; // for the shared color palette (SplashConfig)
 import 'welcome_screen.dart'; // for the shared HoverScaleButton
 import 'login_screen.dart';
@@ -46,6 +47,7 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _neighborhoodController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
 
@@ -57,6 +59,7 @@ class _SignupScreenState extends State<SignupScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _neighborhoodController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
     super.dispose();
@@ -68,14 +71,21 @@ class _SignupScreenState extends State<SignupScreen> {
 
   // This is the whole signup flow. Straightforward top-to-bottom:
   // 1) check the fields locally, 2) ask Firebase to create the account,
-  // 3) save the full name on that account, 4) handle any error simply.
+  // 3) save the full name on that account, 4) save the neighborhood to
+  // Firestore (Firebase Auth itself has no field for this), 5) handle any
+  // error simply.
   Future<void> _signUp() async {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
+    final neighborhood = _neighborhoodController.text.trim();
     final password = _passwordController.text;
     final confirmPassword = _confirmController.text;
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    if (name.isEmpty ||
+        email.isEmpty ||
+        neighborhood.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       _showMessage('Please fill in all fields.');
       return;
     }
@@ -92,6 +102,17 @@ class _SignupScreenState extends State<SignupScreen> {
         password: password,
       );
       await credential.user?.updateDisplayName(name);
+
+      // Firebase Auth doesn't have a built-in "neighborhood" field, so it's
+      // stored in Firestore under the new user's uid.
+      final uid = credential.user?.uid;
+      if (uid != null) {
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'name': name,
+          'email': email,
+          'neighborhood': neighborhood,
+        });
+      }
 
       if (!mounted) return;
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
@@ -163,6 +184,14 @@ class _SignupScreenState extends State<SignupScreen> {
                 hint: 'Email',
                 icon: Icons.mail_outline,
                 keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: SignupConfig.gapBetweenFields),
+
+              // New field — lets people add the neighborhood/area they're in.
+              _AppTextField(
+                controller: _neighborhoodController,
+                hint: 'Neighborhood / Area',
+                icon: Icons.location_on_outlined,
               ),
               const SizedBox(height: SignupConfig.gapBetweenFields),
 
