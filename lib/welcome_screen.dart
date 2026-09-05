@@ -33,7 +33,7 @@ class WelcomeConfig {
 
   // ---- Sizes ----
   // Icon size — this is the one to bump up if you want it bigger/smaller.
-  static const double iconSize = 170;
+  static const double iconSize = 180;
   static const double eyebrowFontSize = 18; // "Welcome to"
   static const double brandFontSize = 38; // "NeighborNest"
   static const double taglineFontSize = 15.5; // "Connecting neighbors..." lines

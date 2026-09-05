@@ -17,6 +17,14 @@ class ProfileConfig {
   static const Color subtitleColor = Color(0xFF64748B);
   static const Color avatarBg = Color(0xFFE2E8F0);
   static const Color logoutRed = Color(0xFFEF4444);
+
+  // How long the "Logging out..." card stays on screen, minimum. Bump this
+  // up or down to taste — the actual sign-out happens in parallel, so this
+  // just controls how long the loading state is visible.
+  static const Duration logoutLoadingDuration = Duration(seconds: 2);
+
+  // How dark the background behind the card gets while logging out.
+  static const Color logoutOverlayColor = Color(0x99000000); // ~60% black
 }
 
 class ProfileScreen extends StatefulWidget {
@@ -59,8 +67,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _logOut() async {
-    await FirebaseAuth.instance.signOut();
+    // Dim the background and show a small "Logging out..." card. Not
+    // dismissible by tapping outside or the back button, so it always
+    // resolves through the code below.
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: ProfileConfig.logoutOverlayColor,
+      builder: (_) => PopScope(
+        canPop: false,
+        child: Center(
+          child: Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            elevation: 8,
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2.5),
+                  ),
+                  SizedBox(width: 16),
+                  Text(
+                    'Logging out...',
+                    style: TextStyle(fontSize: 15, color: ProfileConfig.brandNavy),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Run the real sign-out and the minimum display time together, so the
+    // card is visible for at least `logoutLoadingDuration` even if signOut()
+    // itself resolves instantly.
+    await Future.wait([
+      FirebaseAuth.instance.signOut(),
+      Future.delayed(ProfileConfig.logoutLoadingDuration),
+    ]);
+
     if (!mounted) return;
+    Navigator.of(context, rootNavigator: true).pop(); // close the dialog
+
     // Clear the whole stack so the back button can't return to Home/Profile
     // after logging out.
     Navigator.of(context).pushAndRemoveUntil(
