@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // used to save the neighborhood field
-import 'splash_screen.dart'; // for the shared color palette (SplashConfig)
-import 'welcome_screen.dart'; // for the shared HoverScaleButton
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'splash_screen.dart';
+import 'welcome_screen.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 
-/// ============================================================
-/// SIGN UP SCREEN CONFIG
-/// ------------------------------------------------------------
-/// Sizes, colors, and text live here so they're easy to tweak
-/// without touching the widget code below.
-/// ============================================================
 class SignupConfig {
   static const String iconAsset = 'assets/images/icon.png';
 
@@ -69,11 +63,6 @@ class _SignupScreenState extends State<SignupScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  // This is the whole signup flow. Straightforward top-to-bottom:
-  // 1) check the fields locally, 2) ask Firebase to create the account,
-  // 3) save the full name on that account, 4) save the neighborhood to
-  // Firestore (Firebase Auth itself has no field for this), 5) handle any
-  // error simply.
   Future<void> _signUp() async {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
@@ -103,8 +92,6 @@ class _SignupScreenState extends State<SignupScreen> {
       );
       await credential.user?.updateDisplayName(name);
 
-      // Firebase Auth doesn't have a built-in "neighborhood" field, so it's
-      // stored in Firestore under the new user's uid.
       final uid = credential.user?.uid;
       if (uid != null) {
         await FirebaseFirestore.instance.collection('users').doc(uid).set({
@@ -135,13 +122,11 @@ class _SignupScreenState extends State<SignupScreen> {
             children: [
               const SizedBox(height: 8),
 
-              // Back arrow
               IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.arrow_back, color: SignupConfig.brandNavy),
               ),
 
-              // Icon — no animation here, just the plain image.
               Center(
                 child: Image.asset(
                   SignupConfig.iconAsset,
@@ -151,7 +136,6 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Brand name, same two-color style as the splash/welcome screens.
               Center(
                 child: RichText(
                   text: TextSpan(
@@ -187,7 +171,6 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: SignupConfig.gapBetweenFields),
 
-              // New field — lets people add the neighborhood/area they're in.
               _AppTextField(
                 controller: _neighborhoodController,
                 hint: 'Neighborhood / Area',
@@ -221,8 +204,6 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 28),
 
-              // Sign Up button — same hover/press "grow slightly" feedback
-              // as the Welcome screen buttons.
               HoverScaleButton(
                 onTap: _isLoading ? () {} : _signUp,
                 child: Container(
@@ -278,9 +259,6 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 }
 
-/// One reusable text field styled to match the design: rounded border,
-/// a leading icon, and an optional trailing widget (used for the
-/// password show/hide eye icon).
 class _AppTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;

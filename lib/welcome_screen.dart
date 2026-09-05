@@ -4,45 +4,33 @@ import 'splash_screen.dart'; // reused for SplashConfig color palette
 import 'login_screen.dart';
 import 'signup_screen.dart';
 
-/// ============================================================
-/// WELCOME SCREEN CONFIG
-/// ------------------------------------------------------------
-/// All sizes, colors, spacing, wording, and timings live here.
-/// Tweak anything below — the widget code never needs touching.
-/// ============================================================
 class WelcomeConfig {
-  // ---- Asset paths ----
   static const String iconAsset = 'assets/images/icon.png';
   static const String bgAsset = 'assets/images/bg_blur.png';
 
-  // ---- Colors (reusing the same palette as the splash screen) ----
-  static const Color brandNavy = SplashConfig.neighborColor; // "Neighbor"
-  static const Color brandGreen = SplashConfig.nestColor; // "Nest"
+  static const Color brandNavy = SplashConfig.neighborColor;
+  static const Color brandGreen = SplashConfig.nestColor;
   static const Color primaryButtonColor = SplashConfig.colorBlue;
   static const Color subtitleColor = Color(0xFF64748B);
   static const Color eyebrowColor = Color(0xFF334155);
 
-  // ---- Wording (edit freely) ----
   static const String eyebrowText = 'Welcome to';
-  static const String brandPart1 = 'Neighbor'; // navy
-  static const String brandPart2 = 'Nest'; // green
+  static const String brandPart1 = 'Neighbor';
+  static const String brandPart2 = 'Nest';
   static const String taglineLine =
       'Connecting neighbors. Helping each other.\nGrowing stronger communities together.';
   static const String primaryButtonText = 'Get Started';
   static const String secondaryButtonText = 'I already have an account';
 
-  // ---- Sizes ----
-  // Icon size — this is the one to bump up if you want it bigger/smaller.
   static const double iconSize = 180;
-  static const double eyebrowFontSize = 18; // "Welcome to"
-  static const double brandFontSize = 38; // "NeighborNest"
-  static const double taglineFontSize = 15.5; // "Connecting neighbors..." lines
+  static const double eyebrowFontSize = 18;
+  static const double brandFontSize = 38;
+  static const double taglineFontSize = 15.5;
   static const double buttonHeight = 56;
   static const double buttonRadius = 30;
-  static const double buttonFontSize = 17; // "Get Started" / "I already have an account"
+  static const double buttonFontSize = 17;
 
-  // ---- Spacing ----
-  static const double iconTopSpacing = 0.14; // fraction of screen height
+  static const double iconTopSpacing = 0.14;
   static const double gapIconToEyebrow = 30;
   static const double gapEyebrowToBrand = 4;
   static const double gapBrandToTagline = 16;
@@ -50,31 +38,21 @@ class WelcomeConfig {
   static const double gapBetweenButtons = 14;
   static const double bottomPadding = 48;
 
-  // ---- Press feedback (touch only — no mouse cursor on phones/emulators) ----
-  static const double pressScale = 0.96; // shrink slightly on tap-down
+  static const double pressScale = 0.96;
   static const Duration hoverPressDuration = Duration(milliseconds: 150);
 
-  // ---- Animation timings ----
   static const Duration startDelay = Duration(milliseconds: 200);
 
-  // Icon reveal: rises from below into place (bottom -> top) while
-  // blurring from soft to sharp and fading in. Increase iconRevealDuration
-  // for a slower/more gradual rise; increase iconRiseDistance to make it
-  // travel further (start lower) before settling.
   static const Duration iconRevealDuration = Duration(milliseconds: 1600);
-  static const Curve iconRevealCurve = Curves.easeOutQuint; // slow, smooth finish
+  static const Curve iconRevealCurve = Curves.easeOutQuint;
   static const double iconBlurStart = 22;
   static const double iconScaleStart = 1.12;
-  static const double iconRiseDistance = 130; // px it travels upward into place
+  static const double iconRiseDistance = 130;
 
-  // Heading (eyebrow + brand name) fade/slide up.
   static const Duration textRevealDuration = Duration(milliseconds: 700);
 
-  // Tagline fades slightly after the heading (staggered within the same
-  // controller via Interval — see build()).
   static const double taglineStaggerStart = 0.35;
 
-  // Buttons fade/slide up, primary button slightly before secondary.
   static const Duration buttonsRevealDuration = Duration(milliseconds: 650);
   static const double secondaryButtonStagger = 0.3;
 }
@@ -138,17 +116,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
             children: [
               SizedBox(height: screenHeight * WelcomeConfig.iconTopSpacing),
 
-              // ---- Step 1: icon blurs into focus ----
               _BlurInIcon(controller: _iconController),
 
               SizedBox(height: WelcomeConfig.gapIconToEyebrow),
 
-              // ---- Step 2: heading + tagline fade/slide up ----
               _RevealText(controller: _textController),
 
               const Spacer(),
 
-              // ---- Step 3: buttons fade/slide up ----
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   WelcomeConfig.horizontalPadding,
@@ -166,7 +141,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
   }
 }
 
-/// ---------------- Icon: blur -> sharp, fade in, settle into place ----------------
 class _BlurInIcon extends StatelessWidget {
   final AnimationController controller;
   const _BlurInIcon({required this.controller});
@@ -178,10 +152,9 @@ class _BlurInIcon extends StatelessWidget {
     return AnimatedBuilder(
       animation: curved,
       builder: (context, child) {
-        final t = curved.value; // 0 -> 1
+        final t = curved.value;
         final blurSigma = WelcomeConfig.iconBlurStart * (1 - t);
         final scale = WelcomeConfig.iconScaleStart - (WelcomeConfig.iconScaleStart - 1.0) * t;
-        // Positive dy = below its final spot. Starts low, rises to 0 (bottom -> top).
         final dy = WelcomeConfig.iconRiseDistance * (1 - t);
 
         return Opacity(
@@ -207,7 +180,6 @@ class _BlurInIcon extends StatelessWidget {
   }
 }
 
-/// ---------------- Heading + tagline: staggered fade + slide up ----------------
 class _RevealText extends StatelessWidget {
   final AnimationController controller;
   const _RevealText({required this.controller});
@@ -297,7 +269,6 @@ class _FadeSlideUp extends StatelessWidget {
   }
 }
 
-/// ---------------- Buttons: staggered fade + slide up ----------------
 class _RevealButtons extends StatelessWidget {
   final AnimationController controller;
   const _RevealButtons({required this.controller});
@@ -378,10 +349,6 @@ class _RevealButtons extends StatelessWidget {
   }
 }
 
-/// A button wrapper that shrinks slightly on tap-down (touch feedback) and
-/// springs back on release, then calls [onTap]. No mouse-hover behavior —
-/// phones and emulators don't have a cursor to hover with. Public so other
-/// screens (e.g. the signup screen) can reuse it too.
 class HoverScaleButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onTap;

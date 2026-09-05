@@ -1,20 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// ============================================================
-/// SPLASH SCREEN CONFIG
-/// ------------------------------------------------------------
-/// Every size, color, spacing, and timing value used by the
-/// splash screen lives here. Tweak anything in this class and
-/// the whole screen updates — you never need to touch the
-/// widget code below just to resize/recolor/retime something.
-/// ============================================================
 class SplashConfig {
-  // ---- Asset paths ----
-  // Put the two files here: assets/images/icon.png and assets/images/bg.png
   static const String iconAsset = 'assets/images/icon.png';
   static const String bgAsset = 'assets/images/bg.png';
 
-  // ---- Colors (from your palette) ----
   static const Color colorBlue = Color(0xFF2563EB);
   static const Color colorGreen = Color(0xFF22C55E);
   static const Color colorOrange = Color(0xFFF59E0B);
@@ -22,22 +11,17 @@ class SplashConfig {
   static const Color colorLight = Color(0xFFF1F5F9);
   static const Color colorNavy = Color(0xFF1E293B);
 
-  // "Neighbor" = same color as sample's "Community" (navy)
   static const Color neighborColor = colorNavy;
-  // "Nest" = same color as sample's "Connect" (green)
   static const Color nestColor = colorGreen;
 
-  // Tagline separator dots -> first two palette colors
   static const Color taglineDot1Color = colorBlue;
   static const Color taglineDot2Color = colorGreen;
 
-  // Bottom loading dots -> first three palette colors
   static const List<Color> loadingDotColors = [colorBlue, colorGreen, colorOrange];
 
-  static const Color taglineTextColor = Color(0xFF64748B); // soft gray-navy
+  static const Color taglineTextColor = Color(0xFF64748B);
   static const Color connectingTextColor = Color(0xFF475569);
 
-  // ---- Sizes ----
   static const double iconSize = 180;
   static const double appNameFontSize = 34;
   static const double taglineFontSize = 17;
@@ -45,13 +29,11 @@ class SplashConfig {
   static const double loadingDotSize = 10;
   static const double connectingTextFontSize = 15;
 
-  // ---- Spacing / positions (tweak to nudge things up/down) ----
-  static const double iconTopSpacing = 0.16; // fraction of screen height above icon
+  static const double iconTopSpacing = 0.16;
   static const double gapIconToName = 28;
   static const double gapNameToTagline = 10;
-  static const double bottomSectionOffset = 90; // distance of dots/text from bottom
+  static const double bottomSectionOffset = 90;
 
-  // ---- Animation durations ----
   static const Duration iconPopDelay = Duration(milliseconds: 150);
   static const Duration iconPopDuration = Duration(milliseconds: 950);
 
@@ -61,26 +43,15 @@ class SplashConfig {
   static const Duration dotPulseCycleDuration = Duration(milliseconds: 550);
   static const Duration dotPulseStagger = Duration(milliseconds: 160);
 
-  // How long the "Connecting our community..." stage stays on screen
-  // before the reveal transition starts.
   static const Duration holdBeforeReveal = Duration(milliseconds: 3500);
 
-  // The "splash slides up and reveals home screen" transition.
   static const Duration revealDuration = Duration(milliseconds: 750);
   static const Curve revealCurve = Curves.easeInOutCubic;
 }
 
 class SplashScreen extends StatefulWidget {
-  /// The screen to navigate to once the splash finishes. It is NOT built
-  /// until the reveal transition completes, so its own entrance animation
-  /// (if it has one) only ever plays once, after the splash is gone.
   final Widget homeScreen;
 
-  /// Optional static (non-animated) visual shown behind the splash while
-  /// it slides away — purely for a seamless look during the transition.
-  /// Pass e.g. `Image.asset(WelcomeConfig.bgAsset, fit: BoxFit.cover)` if
-  /// your home screen's background should already be visible as the
-  /// splash slides up. Defaults to a plain background color.
   final Widget? revealBackground;
 
   const SplashScreen({super.key, required this.homeScreen, this.revealBackground});
@@ -93,15 +64,15 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   late final AnimationController _iconController;
   late final Animation<double> _iconScale;
 
-  late final AnimationController _textController; // app name + tagline fade
+  late final AnimationController _textController;
   late final Animation<double> _textFade;
 
-  late final AnimationController _loadingController; // dots row + "Connecting..." fade
+  late final AnimationController _loadingController;
   late final Animation<double> _loadingFade;
 
-  late final AnimationController _dotsPulseController; // repeating blink for the 3 dots
+  late final AnimationController _dotsPulseController;
 
-  late final AnimationController _revealController; // final slide-up transition
+  late final AnimationController _revealController;
   late final Animation<double> _revealOffset;
 
   bool _navigated = false;
@@ -130,11 +101,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _runSequence();
   }
 
-  /// Step-by-step timeline:
-  /// 1) icon pops in
-  /// 2) app name + tagline fade in
-  /// 3) loading dots + "Connecting our community..." fade in and pulse
-  /// 4) after a hold, the whole splash slides up revealing the home screen
   Future<void> _runSequence() async {
     await Future.delayed(SplashConfig.iconPopDelay);
     if (!mounted) return;
@@ -185,16 +151,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       backgroundColor: SplashConfig.colorLight,
       body: Stack(
         children: [
-          // A static, non-animated placeholder — NOT the real home screen.
-          // The real home screen is only built after the reveal finishes
-          // (see _goToHome), so its entrance animation plays exactly once,
-          // and only once it's actually visible to the user.
           Positioned.fill(
             child: widget.revealBackground ?? Container(color: SplashConfig.colorLight),
           ),
 
-          // Splash overlay: everything below animates as one unit sliding
-          // upward off the screen for the final reveal.
           AnimatedBuilder(
             animation: _revealOffset,
             builder: (context, child) {
@@ -244,7 +204,6 @@ class _SplashContent extends StatelessWidget {
           children: [
             SizedBox(height: MediaQuery.of(context).size.height * SplashConfig.iconTopSpacing),
 
-            // ---- Step 1: icon pop ----
             ScaleTransition(
               scale: iconScale,
               child: Image.asset(
@@ -256,7 +215,6 @@ class _SplashContent extends StatelessWidget {
 
             SizedBox(height: SplashConfig.gapIconToName),
 
-            // ---- Step 2: app name + tagline fade in ----
             FadeTransition(
               opacity: textFade,
               child: Column(
@@ -308,7 +266,6 @@ class _SplashContent extends StatelessWidget {
 
             const Spacer(),
 
-            // ---- Step 3: loading dots + "Connecting our community..." ----
             FadeTransition(
               opacity: loadingFade,
               child: Padding(
@@ -321,7 +278,6 @@ class _SplashContent extends StatelessWidget {
                         return _PulsingDot(
                           controller: dotsPulseController,
                           color: SplashConfig.loadingDotColors[i],
-                          // stagger each dot's phase so they blink in sequence
                           delayFraction: (SplashConfig.dotPulseStagger.inMilliseconds *
                               i /
                               SplashConfig.dotPulseCycleDuration.inMilliseconds)
@@ -368,7 +324,7 @@ class _TaglineDot extends StatelessWidget {
 class _PulsingDot extends StatelessWidget {
   final AnimationController controller;
   final Color color;
-  final double delayFraction; // 0.0 - 1.0, offsets this dot's phase in the cycle
+  final double delayFraction;
 
   const _PulsingDot({
     required this.controller,
@@ -388,7 +344,6 @@ class _PulsingDot extends StatelessWidget {
       child: AnimatedBuilder(
         animation: curved,
         builder: (context, child) {
-          // fades between 35% and 100% opacity to create the "blink"
           final opacity = 0.35 + (0.65 * curved.value);
           return Opacity(
             opacity: opacity,

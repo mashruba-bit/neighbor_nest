@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'splash_screen.dart'; // for the shared color palette (SplashConfig)
+import 'splash_screen.dart';
 import 'profile_screen.dart';
 
-/// ============================================================
-/// HOME SCREEN CONFIG
-/// ============================================================
 class HomeConfig {
   static const Color brandNavy = SplashConfig.neighborColor;
   static const Color brandGreen = SplashConfig.nestColor;
@@ -12,8 +9,6 @@ class HomeConfig {
   static const Color hintColor = Color(0xFF94A3B8);
 }
 
-/// Labels for the bottom nav tabs, in order. Used both for the nav bar
-/// itself and for the "coming soon" page titles.
 const List<String> _tabLabels = [
   'Home',
   'Lost & Found',
@@ -31,14 +26,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // The nav bar always shows "Home" as selected on this screen — the other
-  // tabs open their own page instead of swapping content in place, so there's
-  // nothing to persist here between taps.
   static const int _homeIndex = 0;
   static const int _profileIndex = 5;
 
   void _onTabTapped(int index) {
-    if (index == _homeIndex) return; // already here
+    if (index == _homeIndex) return;
 
     if (index == _profileIndex) {
       Navigator.of(context).push(
@@ -47,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    // Lost & Found, Donate, Volunteer, Board — not built yet.
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => ComingSoonScreen(title: _tabLabels[index])),
     );
@@ -94,9 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// Generic placeholder for any bottom-nav tab that isn't built yet — same
-/// black "coming soon" treatment used for Admin Login, just with a title
-/// that matches whichever tab was tapped.
 class ComingSoonScreen extends StatelessWidget {
   final String title;
 

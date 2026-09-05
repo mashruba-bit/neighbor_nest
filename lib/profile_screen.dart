@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'splash_screen.dart'; // for the shared color palette (SplashConfig)
+import 'splash_screen.dart';
 import 'login_screen.dart';
 
-/// ============================================================
-/// PROFILE SCREEN CONFIG
-/// ------------------------------------------------------------
-/// Deliberately reuses only the app's primary blue and secondary green,
-/// plus red for the destructive log-out action — no extra colors.
-/// ============================================================
 class ProfileConfig {
   static const Color brandNavy = SplashConfig.neighborColor;
   static const Color brandGreen = SplashConfig.nestColor;
@@ -18,13 +12,9 @@ class ProfileConfig {
   static const Color avatarBg = Color(0xFFE2E8F0);
   static const Color logoutRed = Color(0xFFEF4444);
 
-  // How long the "Logging out..." card stays on screen, minimum. Bump this
-  // up or down to taste — the actual sign-out happens in parallel, so this
-  // just controls how long the loading state is visible.
   static const Duration logoutLoadingDuration = Duration(seconds: 2);
 
-  // How dark the background behind the card gets while logging out.
-  static const Color logoutOverlayColor = Color(0x99000000); // ~60% black
+  static const Color logoutOverlayColor = Color(0x99000000);
 }
 
 class ProfileScreen extends StatefulWidget {
@@ -44,8 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadNeighborhood();
   }
 
-  // Neighborhood isn't part of Firebase Auth's user object, so it's read
-  // back from the Firestore doc created at signup.
   Future<void> _loadNeighborhood() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
@@ -67,9 +55,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _logOut() async {
-    // Dim the background and show a small "Logging out..." card. Not
-    // dismissible by tapping outside or the back button, so it always
-    // resolves through the code below.
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -104,19 +89,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
 
-    // Run the real sign-out and the minimum display time together, so the
-    // card is visible for at least `logoutLoadingDuration` even if signOut()
-    // itself resolves instantly.
     await Future.wait([
       FirebaseAuth.instance.signOut(),
       Future.delayed(ProfileConfig.logoutLoadingDuration),
     ]);
 
     if (!mounted) return;
-    Navigator.of(context, rootNavigator: true).pop(); // close the dialog
+    Navigator.of(context, rootNavigator: true).pop();
 
-    // Clear the whole stack so the back button can't return to Home/Profile
-    // after logging out.
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const LoginScreen()),
           (route) => false,
@@ -149,8 +129,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             const SizedBox(height: 12),
 
-            // Neutral avatar — grey circle, blue person icon. No photo, no
-            // extra colors.
             Container(
               width: 110,
               height: 110,
@@ -217,9 +195,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-/// One row in the profile list: a colored circular icon, a label/value pair,
-/// and a trailing chevron. `iconColor` is reused for the icon's tinted
-/// background (at low opacity) so only two accent colors are ever in play.
 class _ProfileTile extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
@@ -258,7 +233,7 @@ class _ProfileTile extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.12),
+                  color: iconColor.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: iconColor, size: 22),

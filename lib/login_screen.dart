@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'splash_screen.dart'; // for the shared color palette (SplashConfig)
-import 'welcome_screen.dart'; // for the shared HoverScaleButton
+import 'splash_screen.dart';
+import 'welcome_screen.dart';
 import 'signup_screen.dart';
 import 'home_screen.dart';
 
-/// ============================================================
-/// LOG IN SCREEN CONFIG
-/// ------------------------------------------------------------
-/// Sizes, colors, and text live here so they're easy to tweak
-/// without touching the widget code below.
-/// ============================================================
 class LoginConfig {
   static const String iconAsset = 'assets/images/icon.png';
 
@@ -61,8 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  // The whole login flow: 1) check fields locally, 2) ask Firebase to sign
-  // in, 3) go to the home screen, 4) handle any error simply.
   Future<void> _logIn() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
@@ -89,8 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // Sends a password-reset email using whatever is currently typed in the
-  // email field.
   Future<void> _forgotPassword() async {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
@@ -118,7 +108,6 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const SizedBox(height: 8),
 
-              // Back arrow
               IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.arrow_back, color: LoginConfig.brandNavy),
@@ -126,7 +115,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 8),
 
-              // Icon — no animation here, just the plain image.
               Center(
                 child: Image.asset(
                   LoginConfig.iconAsset,
@@ -136,7 +124,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Brand name, same two-color style as the other screens.
               Center(
                 child: RichText(
                   text: TextSpan(
@@ -191,8 +178,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 22),
 
-              // Log In button — same hover/press "grow slightly" feedback
-              // as the other screens' buttons.
               HoverScaleButton(
                 onTap: _isLoading ? () {} : _logIn,
                 child: Container(
@@ -240,7 +225,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              // ---- Admin Login section ----
               const SizedBox(height: 18),
               Row(
                 children: [
@@ -289,8 +273,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-/// Simple placeholder page shown when someone taps "Admin Login".
-/// Solid black background with a centered "coming soon" message.
 class AdminComingSoonScreen extends StatelessWidget {
   const AdminComingSoonScreen({super.key});
 
@@ -321,9 +303,6 @@ class AdminComingSoonScreen extends StatelessWidget {
   }
 }
 
-/// Same reusable text field used on the signup screen: rounded border,
-/// a leading icon, and an optional trailing widget (used for the
-/// password show/hide eye icon).
 class _AppTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
