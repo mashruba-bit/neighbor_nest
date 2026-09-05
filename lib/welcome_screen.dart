@@ -50,9 +50,8 @@ class WelcomeConfig {
   static const double gapBetweenButtons = 14;
   static const double bottomPadding = 48;
 
-  // ---- Hover / press feedback ----
-  static const double hoverScale = 1.04; // desktop/web mouse-over
-  static const double pressScale = 0.96; // mobile tap-down feedback
+  // ---- Press feedback (touch only — no mouse cursor on phones/emulators) ----
+  static const double pressScale = 0.96; // shrink slightly on tap-down
   static const Duration hoverPressDuration = Duration(milliseconds: 150);
 
   // ---- Animation timings ----
@@ -379,9 +378,10 @@ class _RevealButtons extends StatelessWidget {
   }
 }
 
-/// A button wrapper that grows slightly on mouse hover (desktop/web) and
-/// shrinks slightly on tap-down (mobile touch feedback), then calls [onTap].
-/// Public so other screens (e.g. the signup screen) can reuse it too.
+/// A button wrapper that shrinks slightly on tap-down (touch feedback) and
+/// springs back on release, then calls [onTap]. No mouse-hover behavior —
+/// phones and emulators don't have a cursor to hover with. Public so other
+/// screens (e.g. the signup screen) can reuse it too.
 class HoverScaleButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onTap;
@@ -398,23 +398,18 @@ class _HoverScaleButtonState extends State<HoverScaleButton> {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => _setScale(WelcomeConfig.hoverScale),
-      onExit: (_) => _setScale(1.0),
-      child: GestureDetector(
-        onTapDown: (_) => _setScale(WelcomeConfig.pressScale),
-        onTapCancel: () => _setScale(1.0),
-        onTapUp: (_) {
-          _setScale(1.0);
-          widget.onTap();
-        },
-        child: AnimatedScale(
-          scale: _scale,
-          duration: WelcomeConfig.hoverPressDuration,
-          curve: Curves.easeOut,
-          child: widget.child,
-        ),
+    return GestureDetector(
+      onTapDown: (_) => _setScale(WelcomeConfig.pressScale),
+      onTapCancel: () => _setScale(1.0),
+      onTapUp: (_) {
+        _setScale(1.0);
+        widget.onTap();
+      },
+      child: AnimatedScale(
+        scale: _scale,
+        duration: WelcomeConfig.hoverPressDuration,
+        curve: Curves.easeOut,
+        child: widget.child,
       ),
     );
   }
