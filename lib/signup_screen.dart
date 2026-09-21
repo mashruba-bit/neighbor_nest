@@ -7,305 +7,98 @@ import 'welcome_screen.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 
-class SignupConfig {
-  static const String iconAsset = 'assets/images/icon.png';
-
-  static const Color brandNavy = SplashConfig.neighborColor;
-  static const Color brandGreen = SplashConfig.nestColor;
-  static const Color primaryColor = SplashConfig.colorBlue;
-  static const Color fieldBorderColor = Color(0xFFCBD5E1);
-  static const Color hintColor = Color(0xFF94A3B8);
-  static const Color subtitleColor = Color(0xFF64748B);
-
-  static const double iconSize = 150;
-  static const double brandFontSize = 30;
-  static const double subtitleFontSize = 17;
-  static const double fieldFontSize = 16;
-  static const double fieldHeight = 60;
-  static const double fieldRadius = 14;
-  static const double buttonHeight = 56;
-  static const double buttonRadius = 16;
-  static const double buttonFontSize = 18;
-
-  static const double horizontalPadding = 26;
-  static const double gapBetweenFields = 18;
-}
-
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
-
-  @override
-  State<SignupScreen> createState() => _SignupScreenState();
-}
-
-class _SignupScreenState extends State<SignupScreen> {
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _neighborhoodController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmController = TextEditingController();
-
-  bool _obscurePassword = true;
-  bool _obscureConfirm = true;
-  bool _isLoading = false;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _neighborhoodController.dispose();
-    _passwordController.dispose();
-    _confirmController.dispose();
-    super.dispose();
-  }
-
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  Future<void> _signUp() async {
-    final name = _nameController.text.trim();
-    final email = _emailController.text.trim();
-    final neighborhood = _neighborhoodController.text.trim();
-    final password = _passwordController.text;
-    final confirmPassword = _confirmController.text;
-
-    if (name.isEmpty ||
-        email.isEmpty ||
-        neighborhood.isEmpty ||
-        password.isEmpty ||
-        confirmPassword.isEmpty) {
-      _showMessage('Please fill in all fields.');
-      return;
-    }
-    if (password != confirmPassword) {
-      _showMessage('Passwords do not match.');
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    try {
-      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      await credential.user?.updateDisplayName(name);
-
-      final uid = credential.user?.uid;
-      if (uid != null) {
-        await FirebaseFirestore.instance.collection('users').doc(uid).set({
-          'name': name,
-          'email': email,
-          'neighborhood': neighborhood,
-        });
-      }
-
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
-    } on FirebaseAuthException catch (e) {
-      _showMessage(e.message ?? 'Sign up failed. Please try again.');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
+class SignupView extends StatelessWidget {
+  const SignupView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SplashConfig.colorLight,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: SignupConfig.horizontalPadding),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 8),
-
-              IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.arrow_back, color: SignupConfig.brandNavy),
-              ),
-
-              Center(
-                child: Image.asset(
-                  SignupConfig.iconAsset,
-                  width: SignupConfig.iconSize,
-                  height: SignupConfig.iconSize,
+              Text(
+                "Sign Up",
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.w600,
                 ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              Spacer(),
+              Image.asset("assets/images/login_view.svg", height: 200,),
+              Spacer(),
+              makeInput(label: "Name"),
+              makeInput(label: "Email"),
+              makeInput(label: "Password",obsureText: true),
 
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    style: TextStyle(fontSize: SignupConfig.brandFontSize, fontWeight: FontWeight.bold),
-                    children: [
-                      TextSpan(text: 'Neighbor', style: TextStyle(color: SignupConfig.brandNavy)),
-                      TextSpan(text: 'Nest', style: TextStyle(color: SignupConfig.brandGreen)),
-                    ],
+              MaterialButton(onPressed: (){
+
+              },
+                minWidth: double.infinity,
+                color: Colors.redAccent[400],
+                height: 60,
+                child: Text("Sing Up", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white70),),
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: Colors.black,
                   ),
+                  borderRadius: BorderRadius.circular(40),
                 ),
               ),
-              const SizedBox(height: 8),
-              Center(
-                child: Text(
-                  'Create your account',
-                  style: TextStyle(fontSize: SignupConfig.subtitleFontSize, color: SignupConfig.subtitleColor),
-                ),
-              ),
-              const SizedBox(height: 32),
+              SizedBox(height: 10,),
 
-              _AppTextField(
-                controller: _nameController,
-                hint: 'Full Name',
-                icon: Icons.person_outline,
-              ),
-              const SizedBox(height: SignupConfig.gapBetweenFields),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Already have an account?"),
+                  SizedBox(width: 5,),
+                  InkWell(
+                      onTap: (){
 
-              _AppTextField(
-                controller: _emailController,
-                hint: 'Email',
-                icon: Icons.mail_outline,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: SignupConfig.gapBetweenFields),
+                      },
+                      child: Text("Login", style: TextStyle(fontWeight: FontWeight.w600),)),
 
-              _AppTextField(
-                controller: _neighborhoodController,
-                hint: 'Neighborhood / Area',
-                icon: Icons.location_on_outlined,
-              ),
-              const SizedBox(height: SignupConfig.gapBetweenFields),
+                ],
+              )
 
-              _AppTextField(
-                controller: _passwordController,
-                hint: 'Password',
-                icon: Icons.lock_outline,
-                obscureText: _obscurePassword,
-                trailing: IconButton(
-                  icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                  color: SignupConfig.hintColor,
-                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                ),
-              ),
-              const SizedBox(height: SignupConfig.gapBetweenFields),
-
-              _AppTextField(
-                controller: _confirmController,
-                hint: 'Confirm Password',
-                icon: Icons.lock_outline,
-                obscureText: _obscureConfirm,
-                trailing: IconButton(
-                  icon: Icon(_obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                  color: SignupConfig.hintColor,
-                  onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                ),
-              ),
-              const SizedBox(height: 28),
-
-              HoverScaleButton(
-                onTap: _isLoading ? () {} : _signUp,
-                child: Container(
-                  width: double.infinity,
-                  height: SignupConfig.buttonHeight,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: SignupConfig.primaryColor,
-                    borderRadius: BorderRadius.circular(SignupConfig.buttonRadius),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
-                  )
-                      : Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: SignupConfig.buttonFontSize,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 28),
-
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    style: TextStyle(fontSize: 15, color: SignupConfig.subtitleColor),
-                    children: [
-                      const TextSpan(text: 'Already have an account? '),
-                      TextSpan(
-                        text: 'Sign In',
-                        style: const TextStyle(color: SignupConfig.primaryColor, fontWeight: FontWeight.w600),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
-                          },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
             ],
           ),
         ),
       ),
     );
   }
-}
 
-class _AppTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String hint;
-  final IconData icon;
-  final bool obscureText;
-  final Widget? trailing;
-  final TextInputType? keyboardType;
-
-  const _AppTextField({
-    required this.controller,
-    required this.hint,
-    required this.icon,
-    this.obscureText = false,
-    this.trailing,
-    this.keyboardType,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: SignupConfig.fieldHeight,
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        keyboardType: keyboardType,
-        style: const TextStyle(fontSize: SignupConfig.fieldFontSize),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(color: SignupConfig.hintColor),
-          prefixIcon: Icon(icon, color: SignupConfig.hintColor),
-          suffixIcon: trailing,
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(SignupConfig.fieldRadius),
-            borderSide: const BorderSide(color: SignupConfig.fieldBorderColor),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(SignupConfig.fieldRadius),
-            borderSide: const BorderSide(color: SignupConfig.fieldBorderColor),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(SignupConfig.fieldRadius),
-            borderSide: const BorderSide(color: SignupConfig.primaryColor, width: 1.5),
+  Widget makeInput({label,obsureText = false}){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,style:TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+            color: Colors.black87
+        ),),
+        SizedBox(height: 5,),
+        TextField(
+          obscureText: obsureText,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(vertical: 0,horizontal: 10),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.grey,
+              ),
+            ),
+            border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey)
+            ),
           ),
         ),
-      ),
+        SizedBox(height: 20,)
+
+      ],
     );
   }
 }

@@ -19,12 +19,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'NeighborNest',
       debugShowCheckedModeBanner: false,
+
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primarySwatch: Colors.blue,
       ),
+
       home: SplashScreen(
-        homeScreen: const WelcomeScreen(),
-        revealBackground: Image.asset(WelcomeConfig.bgAsset, fit: BoxFit.cover),
+        homeScreen: const welcome_screen(),
+
+        revealBackground: Image.asset(
+          'assets/images/bg_blur.png',
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
