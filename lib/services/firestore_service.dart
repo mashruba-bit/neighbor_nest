@@ -15,25 +15,11 @@ class FirestoreService {
     await _postsCollection.add(postData);
   }
 
-  // --- CHAT METHODS ---
-  final CollectionReference _messagesCollection =
-      FirebaseFirestore.instance.collection('messages');
-
-  // Fetch messages for a specific post stream
-  Stream<QuerySnapshot> getChatStream(String postTitle) {
-    return _messagesCollection
-        .where('postTitle', isEqualTo: postTitle)
-        .orderBy('timestamp', descending: false)
-        .snapshots();
-  }
-
-  // Send a new message
-  Future<void> sendMessage(String postTitle, String text) async {
-    await _messagesCollection.add({
-      'postTitle': postTitle,
-      'text': text,
-      'sender': 'Me', // hardcoded sender since no auth is implemented
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+  // Delete all posts (debug feature)
+  Future<void> deleteAllPosts() async {
+    final snapshot = await _postsCollection.get();
+    for (final doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
   }
 }
