@@ -1,68 +1,151 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'splash_screen.dart';
-import 'welcome_screen.dart';
+
 import 'signup_screen.dart';
 import 'home_screen.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
 
   @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  void login() async {
+
+    try {
+
+      // Login using Firebase
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      // Go to Home
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
+
+    } catch (e) {
+
+      // Show error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 20,
+          ),
+
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
+
           child: Column(
             children: [
-              Text(
+
+              const Text(
                 "Login",
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.w600,
                 ),
-                textAlign: TextAlign.center,
               ),
-              Spacer(),
-              Image.asset("assets/images/login_view.svg", height: 200,),
-              Spacer(),
-              makeInput(label: "Email"),
-              makeInput(label: "Password",obsureText: true),
 
-              MaterialButton(onPressed: (){
+              const Spacer(),
 
-              },
+              Image.asset(
+                "assets/images/icon.png",
+                height: 200,
+              ),
+
+              const Spacer(),
+
+              makeInput(
+                label: "Email",
+                controller: emailController,
+              ),
+
+              makeInput(
+                label: "Password",
+                controller: passwordController,
+                obscureText: true,
+              ),
+
+              MaterialButton(
+                onPressed: login,
+
                 minWidth: double.infinity,
-                color: Colors.indigoAccent[400],
                 height: 60,
-                child: Text("Login", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white70),),
+                color: Colors.indigoAccent[400],
+
+                child: const Text(
+                  "Login",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white70,
+                  ),
+                ),
+
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(
+                  side: const BorderSide(
                     color: Colors.black,
                   ),
                   borderRadius: BorderRadius.circular(40),
                 ),
               ),
-              SizedBox(height: 10,),
+
+              const SizedBox(height: 10),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Don't have an account?"),
-                  SizedBox(width: 5,),
+
+                  const Text(
+                    "Don't have an account?",
+                  ),
+
+                  const SizedBox(width: 5),
+
                   InkWell(
-                      onTap: (){
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignupView(),
+                        ),
+                      );
+                    },
 
-                      },
-                      child: Text("Sign Up", style: TextStyle(fontWeight: FontWeight.w600),)),
-
+                    child: const Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ],
-              )
-
+              ),
             ],
           ),
         ),
@@ -70,32 +153,52 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget makeInput({label,obsureText = false}){
+  Widget makeInput({
+    required String label,
+    required TextEditingController controller,
+    bool obscureText = false,
+  }) {
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,style:TextStyle(
+
+        Text(
+          label,
+          style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w400,
-            color: Colors.black87
-        ),),
-        SizedBox(height: 5,),
+            color: Colors.black87,
+          ),
+        ),
+
+        const SizedBox(height: 5),
+
         TextField(
-          obscureText: obsureText,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(vertical: 0,horizontal: 10),
+          controller: controller,
+          obscureText: obscureText,
+
+          decoration: const InputDecoration(
+            contentPadding: EdgeInsets.symmetric(
+              vertical: 0,
+              horizontal: 10,
+            ),
+
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.grey,
               ),
             ),
+
             border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey)
+              borderSide: BorderSide(
+                color: Colors.grey,
+              ),
             ),
           ),
         ),
-        SizedBox(height: 20,)
 
+        const SizedBox(height: 20),
       ],
     );
   }

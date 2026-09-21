@@ -1,70 +1,168 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'splash_screen.dart';
-import 'welcome_screen.dart';
+
 import 'login_screen.dart';
 import 'home_screen.dart';
 
-class SignupView extends StatelessWidget {
+class SignupView extends StatefulWidget {
   const SignupView({Key? key}) : super(key: key);
+
+  @override
+  State<SignupView> createState() => _SignupViewState();
+}
+
+class _SignupViewState extends State<SignupView> {
+
+  // These will store what the user types
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  void signUp() async {
+
+    try {
+
+      // Create account in Firebase Authentication
+      UserCredential userCredential =
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      // Save name and email in Firestore
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userCredential.user!.uid)
+          .set({
+        "name": nameController.text,
+        "email": emailController.text,
+      });
+
+      // Go to Home
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
+
+    } catch (e) {
+
+      // Show error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 20,
+          ),
+
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
+
           child: Column(
             children: [
-              Text(
+
+              const Text(
                 "Sign Up",
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.w600,
                 ),
-                textAlign: TextAlign.center,
               ),
-              Spacer(),
-              Image.asset("assets/images/login_view.svg", height: 200,),
-              Spacer(),
-              makeInput(label: "Name"),
-              makeInput(label: "Email"),
-              makeInput(label: "Password",obsureText: true),
 
-              MaterialButton(onPressed: (){
+              const Spacer(),
 
-              },
+              Image.asset(
+                "assets/images/icon.png",
+                height: 200,
+              ),
+
+              const Spacer(),
+
+              makeInput(
+                label: "Name",
+                controller: nameController,
+              ),
+
+              makeInput(
+                label: "Email",
+                controller: emailController,
+              ),
+
+              makeInput(
+                label: "Password",
+                controller: passwordController,
+                obscureText: true,
+              ),
+
+              MaterialButton(
+                onPressed: signUp,
+
                 minWidth: double.infinity,
-                color: Colors.redAccent[400],
                 height: 60,
-                child: Text("Sing Up", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white70),),
+                color: Colors.redAccent[400],
+
+                child: const Text(
+                  "Sign Up",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white70,
+                  ),
+                ),
+
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(
+                  side: const BorderSide(
                     color: Colors.black,
                   ),
                   borderRadius: BorderRadius.circular(40),
                 ),
               ),
-              SizedBox(height: 10,),
+
+              const SizedBox(height: 10),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Already have an account?"),
-                  SizedBox(width: 5,),
+
+                  const Text(
+                    "Already have an account?",
+                  ),
+
+                  const SizedBox(width: 5),
+
                   InkWell(
-                      onTap: (){
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginView(),
+                        ),
+                      );
+                    },
 
-                      },
-                      child: Text("Login", style: TextStyle(fontWeight: FontWeight.w600),)),
-
+                    child: const Text(
+                      "Login",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ],
-              )
-
+              ),
             ],
           ),
         ),
@@ -72,32 +170,52 @@ class SignupView extends StatelessWidget {
     );
   }
 
-  Widget makeInput({label,obsureText = false}){
+  Widget makeInput({
+    required String label,
+    required TextEditingController controller,
+    bool obscureText = false,
+  }) {
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,style:TextStyle(
+
+        Text(
+          label,
+          style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w400,
-            color: Colors.black87
-        ),),
-        SizedBox(height: 5,),
+            color: Colors.black87,
+          ),
+        ),
+
+        const SizedBox(height: 5),
+
         TextField(
-          obscureText: obsureText,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(vertical: 0,horizontal: 10),
+          controller: controller,
+          obscureText: obscureText,
+
+          decoration: const InputDecoration(
+            contentPadding: EdgeInsets.symmetric(
+              vertical: 0,
+              horizontal: 10,
+            ),
+
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.grey,
               ),
             ),
+
             border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey)
+              borderSide: BorderSide(
+                color: Colors.grey,
+              ),
             ),
           ),
         ),
-        SizedBox(height: 20,)
 
+        const SizedBox(height: 20),
       ],
     );
   }
