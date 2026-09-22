@@ -14,23 +14,22 @@ class SignupView extends StatefulWidget {
 
 class _SignupViewState extends State<SignupView> {
 
-  // These will store what the user types
+  //stores user info
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   void signUp() async {
 
-    try {
+    try { //bcz smth could go wrong
 
-      // Create account in Firebase Authentication
       UserCredential userCredential =
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
-      );
+      );//Take the email n pass from my text fields n crt a Firebase acc
 
-      // Save name and email in Firestore
+      // Saving name n email in Firestore
       await FirebaseFirestore.instance
           .collection("users")
           .doc(userCredential.user!.uid)
@@ -39,7 +38,7 @@ class _SignupViewState extends State<SignupView> {
         "email": emailController.text,
       });
 
-      // Go to Home
+      // go to Home screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -49,7 +48,7 @@ class _SignupViewState extends State<SignupView> {
 
     } catch (e) {
 
-      // Show error
+      // shows error msg
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),
@@ -105,7 +104,7 @@ class _SignupViewState extends State<SignupView> {
               makeInput(
                 label: "Password",
                 controller: passwordController,
-                obscureText: true,
+                obscureText: true, //hides pass
               ),
 
               MaterialButton(
@@ -120,15 +119,8 @@ class _SignupViewState extends State<SignupView> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white70,
+                    color: Colors.white,
                   ),
-                ),
-
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(
-                    color: Colors.black,
-                  ),
-                  borderRadius: BorderRadius.circular(40),
                 ),
               ),
 
@@ -137,14 +129,13 @@ class _SignupViewState extends State<SignupView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-
                   const Text(
                     "Already have an account?",
                   ),
 
                   const SizedBox(width: 5),
 
-                  InkWell(
+                  InkWell( //makes its child respond to taps
                     onTap: () {
                       Navigator.push(
                         context,
@@ -194,24 +185,8 @@ class _SignupViewState extends State<SignupView> {
         TextField(
           controller: controller,
           obscureText: obscureText,
-
           decoration: const InputDecoration(
-            contentPadding: EdgeInsets.symmetric(
-              vertical: 0,
-              horizontal: 10,
-            ),
-
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.grey,
-              ),
-            ),
-
-            border: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.grey,
-              ),
-            ),
+            border: OutlineInputBorder(),
           ),
         ),
 
