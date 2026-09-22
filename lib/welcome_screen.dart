@@ -30,7 +30,7 @@ class welcome_screen extends StatelessWidget {
 
               const Text(
                 "Connecting neighbors. Helping each other. Growing stronger communities together.",
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 18,
@@ -69,14 +69,8 @@ class welcome_screen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white70,
+                    color: Colors.white,
                   ),
-                ),
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(
-                    color: Colors.black,
-                  ),
-                  borderRadius: BorderRadius.circular(40),
                 ),
               ),
 
@@ -101,14 +95,8 @@ class welcome_screen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white70,
+                    color: Colors.white,
                   ),
-                ),
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(
-                    color: Colors.black,
-                  ),
-                  borderRadius: BorderRadius.circular(40),
                 ),
               ),
             ],
